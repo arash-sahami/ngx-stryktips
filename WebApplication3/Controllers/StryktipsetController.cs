@@ -46,7 +46,10 @@ namespace WebApplication3.Controllers
 
       private ResultModel SaveDraws(string draws)
       {
-         var resultModel = new ResultModel();
+         var resultModel = new ResultModel
+         {
+            WeekNumber = GetIso8601WeekOfYear(DateTime.Now)
+         };
  
          if (EnsureCacheDirectory(out string cacheDir))
          {
@@ -55,7 +58,6 @@ namespace WebApplication3.Controllers
          }
          else
          {
-            System.IO.File.WriteAllText(Path.Combine(cacheDir, "latest"), draws);
             resultModel.Original = System.IO.File.ReadAllText(Path.Combine(cacheDir, "original"));
             resultModel.Latest = draws;
          }
@@ -107,6 +109,7 @@ namespace WebApplication3.Controllers
 
    public class ResultModel
    {
+      public int WeekNumber { get; set; }
       public string Original { get; set; }
       public string Latest { get; set; }
    }

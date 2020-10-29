@@ -1,6 +1,6 @@
 <p>This component demonstrates fetching data from the Stryktipset.</p>
-
-<p *ngIf="!forecasts"><em>Loading...</em></p>
+<p>Week {{ weekNumber }}</p>
+<p *ngIf="!originalDraw"><em>Loading...</em></p>
 <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="originalDraw">
   <thead>
     <tr>
@@ -15,9 +15,9 @@
     <tr *ngFor="let event of originalDraw.drawEvents">
       <td>{{ event.eventDescription }}</td>
       <td>{{ event.match.status }}</td>
-      <td>{{ event.odds.one }}</td>
-      <td>{{ event.odds.x }}</td>
-      <td>{{ event.odds.two }}</td>
+      <td>{{ event.odds.one }} (<em [style.color]="getColorOddsOne(event.eventNumber)">{{ getLatestOddsOne(event.eventNumber) }}</em>)</td>
+      <td>{{ event.odds.x }} (<em [style.color]="getColorOddsX(event.eventNumber)">{{ getLatestOddsX(event.eventNumber) }} </em>)</td>
+      <td>{{ event.odds.two }} (<em [style.color]="getColorOddsTwo(event.eventNumber)">{{ getLatestOddsTwo(event.eventNumber) }} </em>)</td>
     </tr>
   </tbody>
 </table>
