@@ -1,0 +1,23 @@
+<p>This component demonstrates fetching data from the Stryktipset.</p>
+
+<p *ngIf="!forecasts"><em>Loading...</em></p>
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="originalDraw">
+  <thead>
+    <tr>
+      <th>Event</th>
+      <th>Match status</th>
+      <th>One</th>
+      <th>X</th>
+      <th>Two</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let event of originalDraw.drawEvents">
+      <td>{{ event.eventDescription }}</td>
+      <td>{{ event.match.status }}</td>
+      <td>{{ event.odds.one }}</td>
+      <td>{{ event.odds.x }}</td>
+      <td>{{ event.odds.two }}</td>
+    </tr>
+  </tbody>
+</table>
