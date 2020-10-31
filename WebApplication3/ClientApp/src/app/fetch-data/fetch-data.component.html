@@ -1,11 +1,11 @@
-<p>This component demonstrates fetching data from the Stryktipset.</p>
-<p>Week {{ weekNumber }}</p>
+<p>Värden inom parantes är från den första hämtningen.</p>
+<p class="week">Week {{ weekNumber }}</p>
 <p *ngIf="!originalDraw"><em>Loading...</em></p>
 <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="originalDraw">
   <thead>
     <tr>
       <th>Event</th>
-      <th>Match status</th>
+      <th>Svenska folket(1-X-2)</th>
       <th>One</th>
       <th>X</th>
       <th>Two</th>
@@ -14,10 +14,10 @@
   <tbody>
     <tr *ngFor="let event of originalDraw.drawEvents">
       <td>{{ event.eventDescription }}</td>
-      <td>{{ event.match.status }}</td>
-      <td>{{ event.odds.one }} (<em [style.color]="getColorOddsOne(event.eventNumber)">{{ getLatestOddsOne(event.eventNumber) }}</em>)</td>
-      <td>{{ event.odds.x }} (<em [style.color]="getColorOddsX(event.eventNumber)">{{ getLatestOddsX(event.eventNumber) }} </em>)</td>
-      <td>{{ event.odds.two }} (<em [style.color]="getColorOddsTwo(event.eventNumber)">{{ getLatestOddsTwo(event.eventNumber) }} </em>)</td>
+      <td>{{ event.svenskaFolket.one }}-{{ event.svenskaFolket.x }}-{{ event.svenskaFolket.two }}</td>
+      <td [style.color]="getColorOddsOne(event.eventNumber)">{{ getLatestOddsOne(event.eventNumber) }} (<em>{{ event.odds.one }}</em>)</td>
+      <td [style.color]="getColorOddsX(event.eventNumber)">{{ getLatestOddsX(event.eventNumber) }}(<em>{{ event.odds.x }}</em>)</td>
+      <td [style.color]="getColorOddsTwo(event.eventNumber)">{{ getLatestOddsTwo(event.eventNumber) }}(<em>{{ event.odds.two }}</em>)</td>
     </tr>
   </tbody>
 </table>

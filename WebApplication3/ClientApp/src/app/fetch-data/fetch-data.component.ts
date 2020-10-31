@@ -3,7 +3,8 @@ import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-fetch-data',
-  templateUrl: './fetch-data.component.html'
+  templateUrl: './fetch-data.component.html',
+  styleUrls: ['./fetch-data.component.css']
 })
 export class FetchDataComponent {
   public originalDraw: any;
@@ -34,7 +35,7 @@ export class FetchDataComponent {
     if (this.latestDraw != null) {
       if (this.latestDraw.drawEvents[eventNumber - 1].odds.one == this.originalDraw.drawEvents[eventNumber - 1].odds.one) return 'black';
 
-      return this.latestDraw.drawEvents[eventNumber - 1].odds.one < this.originalDraw.drawEvents[eventNumber - 1].odds.one ? 'green' : 'red';
+      return this.latestDraw.drawEvents[eventNumber - 1].odds.one > this.originalDraw.drawEvents[eventNumber - 1].odds.one ? 'green' : 'red';
     }
 
     return 'black';
@@ -44,7 +45,7 @@ export class FetchDataComponent {
     if (this.latestDraw != null) {
       if (this.latestDraw.drawEvents[eventNumber - 1].odds.x == this.originalDraw.drawEvents[eventNumber - 1].odds.x) return 'black';
 
-      return this.latestDraw.drawEvents[eventNumber - 1].odds.x < this.originalDraw.drawEvents[eventNumber - 1].odds.x ? 'green' : 'red';
+      return this.latestDraw.drawEvents[eventNumber - 1].odds.x > this.originalDraw.drawEvents[eventNumber - 1].odds.x ? 'green' : 'red';
     }
 
     return 'black';
@@ -54,7 +55,7 @@ export class FetchDataComponent {
     if (this.latestDraw != null) {
       if (this.latestDraw.drawEvents[eventNumber - 1].odds.two == this.originalDraw.drawEvents[eventNumber - 1].odds.two) return 'black';
 
-      return this.latestDraw.drawEvents[eventNumber - 1].odds.two < this.originalDraw.drawEvents[eventNumber - 1].odds.two ? 'green' : 'red';
+      return this.latestDraw.drawEvents[eventNumber - 1].odds.two > this.originalDraw.drawEvents[eventNumber - 1].odds.two ? 'green' : 'red';
     }
 
     return 'black';
