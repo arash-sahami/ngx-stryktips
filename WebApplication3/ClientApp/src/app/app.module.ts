@@ -20,7 +20,7 @@ import { FetchDataComponent } from './fetch-data/fetch-data.component';
     FormsModule,
     RouterModule.forRoot([
       { path: '', component: FetchDataComponent, pathMatch: 'full' },
-      { path: 'fetch-data', component: FetchDataComponent },
+      { path: 'fetch-data', component: FetchDataComponent }
     ])
   ],
   providers: [],

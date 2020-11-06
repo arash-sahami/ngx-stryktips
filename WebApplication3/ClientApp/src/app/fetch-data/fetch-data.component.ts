@@ -14,9 +14,20 @@ export class FetchDataComponent {
   constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
     http.get<any>(baseUrl + 'Stryktipset/get-draw').subscribe(result => {
       this.weekNumber = result.weekNumber;
-      this.originalDraw = JSON.parse(result.original).draws[0];
-      this.latestDraw = result.latest != null ? JSON.parse(result.latest).draws[0] : null;
+      this.originalDraw = this.getDraw(result.original);
+      this.latestDraw = this.getDraw(result.latest);
     }, error => console.error(error));
+  }
+
+  private getDraw(json: string) {
+    if (json != null) {
+      const jsonObject = JSON.parse(json);
+      if (jsonObject != null && jsonObject.draws != null && jsonObject.draws.length > 0) {
+        return jsonObject.draws[0];
+      }
+
+      this.originalDraw = null;
+    }
   }
 
   getLatestOddsOne(eventNumber: number) {

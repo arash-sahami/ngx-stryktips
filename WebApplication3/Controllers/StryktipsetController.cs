@@ -12,105 +12,117 @@ using Newtonsoft.Json.Serialization;
 
 namespace WebApplication3.Controllers
 {
-   [ApiController]
-   [Route("[controller]")]
-   public class StryktipsetController : ControllerBase
-   {
-      private readonly ILogger<StryktipsetController> _logger;
+    [ApiController]
+    [Route("[controller]")]
+    public class StryktipsetController : ControllerBase
+    {
+        private readonly ILogger<StryktipsetController> _logger;
 
-      public StryktipsetController(ILogger<StryktipsetController> logger)
-      {
-         _logger = logger;
-      }
-
-      [HttpGet("get-draw")]
-      public async Task<ActionResult> GetDraws()
-      {
-         try
-         {
-            using var client = new HttpClient();
-            var draws = await client.GetStringAsync("https://api.www.svenskaspel.se/draw/stryktipset/draws");
-            var results = SaveDraws(draws);
-            return new ContentResult()
+        public StryktipsetController(ILogger<StryktipsetController> logger)
+        {
+            _logger = logger;
+        }
+        [HttpGet("clean")]
+        public ActionResult CleanHistory()
+        {
+            var currentWeek = GetIso8601WeekOfYear(DateTime.Now);
+            if (Directory.Exists($"results/{currentWeek}"))
             {
-               Content = JsonConvert.SerializeObject(results, new JsonSerializerSettings
-               {
-                  ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
-               })};
-         }
-         catch (Exception ex)
-         {
-            return new ContentResult() { Content = ex.Message };
-         }
-      }
+                Directory.Delete($"results/{currentWeek}", true);
+            }
 
-      private ResultModel SaveDraws(string draws)
-      {
-         var resultModel = new ResultModel
-         {
-            WeekNumber = GetIso8601WeekOfYear(DateTime.Now)
-         };
- 
-         if (EnsureCacheDirectory(out string cacheDir))
-         {
-            System.IO.File.WriteAllText(Path.Combine(cacheDir, "original"), draws);
-            resultModel.Original = draws;
-         }
-         else
-         {
-            resultModel.Original = System.IO.File.ReadAllText(Path.Combine(cacheDir, "original"));
-            resultModel.Latest = draws;
-         }
+            return Ok();
+        }
 
-         return resultModel;
-      }
+        [HttpGet("get-draw")]
+        public async Task<ActionResult> GetDraws()
+        {
+            try
+            {
+                using var client = new HttpClient();
+                var draws = await client.GetStringAsync("https://api.www.svenskaspel.se/draw/stryktipset/draws");
+                var results = SaveDraws(draws);
+                return new ContentResult()
+                {
+                    Content = JsonConvert.SerializeObject(results, new JsonSerializerSettings
+                    {
+                        ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
+                    })
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ContentResult() { Content = ex.Message };
+            }
+        }
 
-      public bool EnsureCacheDirectory(out string cacheDirectory)
-      {
-         var isNew = false;
+        private ResultModel SaveDraws(string draws)
+        {
+            var resultModel = new ResultModel
+            {
+                WeekNumber = GetIso8601WeekOfYear(DateTime.Now)
+            };
 
-         var currentWeek = GetIso8601WeekOfYear(DateTime.Now);
-         if (Directory.Exists(@"results") == false)
-         {
-            Directory.CreateDirectory(@"results");
-            isNew = true;
-         }
+            if (EnsureCacheDirectory(out string cacheDir))
+            {
+                System.IO.File.WriteAllText(Path.Combine(cacheDir, "original"), draws);
+                resultModel.Original = draws;
+            }
+            else
+            {
+                resultModel.Original = System.IO.File.ReadAllText(Path.Combine(cacheDir, "original"));
+                resultModel.Latest = draws;
+            }
 
-         if (Directory.Exists($"results/{currentWeek}") == false)
-         {
-            cacheDirectory = Directory.CreateDirectory($"results/{currentWeek}").FullName;
-            isNew = true;
-         }
-         else
-         {
-            cacheDirectory = Path.GetFullPath($"results/{currentWeek}");
-         }
+            return resultModel;
+        }
 
-         return isNew;
-      }
+        public bool EnsureCacheDirectory(out string cacheDirectory)
+        {
+            var isNew = false;
 
-      // This presumes that weeks start with Monday.
-      // Week 1 is the 1st week of the year with a Thursday in it.
-      private static int GetIso8601WeekOfYear(DateTime time)
-      {
-         // Seriously cheat.  If its Monday, Tuesday or Wednesday, then it'll 
-         // be the same week# as whatever Thursday, Friday or Saturday are,
-         // and we always get those right
-         DayOfWeek day = CultureInfo.InvariantCulture.Calendar.GetDayOfWeek(time);
-         if (day >= DayOfWeek.Monday && day <= DayOfWeek.Wednesday)
-         {
-            time = time.AddDays(3);
-         }
+            var currentWeek = GetIso8601WeekOfYear(DateTime.Now);
+            if (Directory.Exists(@"results") == false)
+            {
+                Directory.CreateDirectory(@"results");
+                isNew = true;
+            }
 
-         // Return the week of our adjusted day
-         return CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(time, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-      }
-   }
+            if (Directory.Exists($"results/{currentWeek}") == false)
+            {
+                cacheDirectory = Directory.CreateDirectory($"results/{currentWeek}").FullName;
+                isNew = true;
+            }
+            else
+            {
+                cacheDirectory = Path.GetFullPath($"results/{currentWeek}");
+            }
 
-   public class ResultModel
-   {
-      public int WeekNumber { get; set; }
-      public string Original { get; set; }
-      public string Latest { get; set; }
-   }
+            return isNew;
+        }
+
+        // This presumes that weeks start with Monday.
+        // Week 1 is the 1st week of the year with a Thursday in it.
+        private static int GetIso8601WeekOfYear(DateTime time)
+        {
+            // Seriously cheat.  If its Monday, Tuesday or Wednesday, then it'll 
+            // be the same week# as whatever Thursday, Friday or Saturday are,
+            // and we always get those right
+            DayOfWeek day = CultureInfo.InvariantCulture.Calendar.GetDayOfWeek(time);
+            if (day >= DayOfWeek.Monday && day <= DayOfWeek.Wednesday)
+            {
+                time = time.AddDays(3);
+            }
+
+            // Return the week of our adjusted day
+            return CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(time, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+        }
+    }
+
+    public class ResultModel
+    {
+        public int WeekNumber { get; set; }
+        public string Original { get; set; }
+        public string Latest { get; set; }
+    }
 }
